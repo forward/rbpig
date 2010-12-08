@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>master.hadoop.forward.co.uk:9001</value>
+  </property>
+
+  <property>
+   <name>mapred.job.tracker</name>
+   <value>master.hadoop.forward.co.uk:9001</value>
+  </property>
+
+<property>
+  <name>hive.fileformat.check</name>
+  <value>false</value>
+  <description>Prevents Hive server from leaking file descriptors. See https://issues.apache.org/jira/browse/HIVE-1181</description> 
+</property>
+
+<property>
+  <name>hive.metastore.local</name>
+  <value>true</value>
+  <description>controls whether to connect to remove metastore server or open a new metastore server in Hive Client 
+JVM</description>
+</property>
+  
+<property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:mysql://192.168.31.32/hive_metastore?createDatabaseIfNotExist=true</value>
+  <description>JDBC connect string for a JDBC metastore</description>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>hive</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value>forward</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>com.mysql.jdbc.Driver</value>
+  <description>Driver class name for a JDBC metastore</description>
+</property>
+</configuration>
+

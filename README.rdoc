@@ -1,0 +1,4 @@
+= RBPig -- Ruby Pig client with custom HiveTableLoader
+
+A simple library to execute Pig latin script.
+Custom HiveTableLoader supports automatic schema discovery.

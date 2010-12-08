@@ -1,0 +1,28 @@
+<project basedir="." default="jar" name="piggybank">
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="piggybank.jar" value="${basedir}/dist/piggybank.jar"/>
+
+    <path id="build.classpath">
+        <fileset dir="${basedir}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <target name="build">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" source="1.6" target="1.6">
+            <classpath refid="build.classpath"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="build">
+      <jar destfile="${piggybank.jar}">
+        <fileset dir="${build.dir}"/>
+      </jar>
+    </target>
+</project>
