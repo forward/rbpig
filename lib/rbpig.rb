@@ -4,6 +4,7 @@ require File.join(File.dirname(__FILE__), "rbpig", "dataset")
 module RBPig
   class << self
     CLASSPATH = [
+      "#{File.join(File.dirname(__FILE__), %w[..  java dist piggybank.jar])}",
       "#{File.join(File.dirname(__FILE__), %w[..  java lib hive hive-exec-0.5.0+32.jar])}",
       "#{File.join(File.dirname(__FILE__), %w[..  java lib hive hive-metastore-0.5.0+32.jar])}",
       "#{File.join(File.dirname(__FILE__), %w[..  java lib hive libfb303.jar])}",
@@ -26,7 +27,7 @@ module RBPig
   
   class Pig
     def initialize(datasets)
-      @oink_oink = ["REGISTER #{File.join(File.dirname(__FILE__), %w[.. java dist piggybank.jar])}", *datasets.map{|e| e.to_s}]
+      @oink_oink = [*datasets.map{|e| e.to_s}]
     end
     
     def grunt(oink)
