@@ -7,14 +7,16 @@ Gem::Specification.new do |s|
   s.summary = "Pig queries execution ruby binding"
   s.description = "Simple lib for executing Pig queries, supports textfile based hive table loader with automatic schema discovery"
     
-  s.authors = ["Forward Internet Group"]  
-  s.email = "jae.lee@forward.co.uk"
+  s.authors = ["Jae Lee"]  
+  s.email = "jlee@yetitrails.com"
   
   s.rubygems_version = "1.3.5"  
   s.require_paths = ["lib"]
   s.add_dependency('mandy', '>= 0.5.0')
   
+  s.executables = ["rbpig"]
   s.files = [
+    "bin/rbpig",
     "lib/rbpig.rb",
     "lib/rbpig/dataset.rb",
     "java/dist/piggybank.jar",
