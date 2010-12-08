@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'rbpig'
+
+exec("PIG_CLASSPATH='#{RBPig.classpath}' pig")
