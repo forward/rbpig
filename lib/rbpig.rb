@@ -41,7 +41,7 @@ module RBPig
       
       File.open(script_file, "w") do |file|
         aliases.each do |alias_to_fetch|
-          @oink_oink << "STORE #{alias_to_fetch} INTO '#{alias_dump_dir}/#{alias_to_fetch}';"
+          @oink_oink << "STORE #{alias_to_fetch} INTO '#{alias_dump_dir}/#{alias_to_fetch}' USING PigStorage ('\\t');"
         end
         file << @oink_oink.join("\n")
       end
@@ -54,7 +54,7 @@ module RBPig
         
         aliases.each do |alias_to_fetch|
           `mandy-get #{alias_dump_dir}/#{alias_to_fetch} #{local_alias_dump_dir}/#{alias_to_fetch}`
-          alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines
+          alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines.map{|e| e.chomp("\n").split("\t")}
         end
         `mandy-rm #{alias_dump_dir}`
         alias_dumps

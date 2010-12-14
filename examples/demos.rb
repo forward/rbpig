@@ -19,5 +19,5 @@ ppr_costs_stats, ppr_conversions_stats = RBPig.datasets(RBPig::Dataset.hive(ppr_
 end
 
 [ppr_costs_stats, ppr_conversions_stats].flatten.each do |stat|
-  puts stat
+  puts stat.inspect
 end

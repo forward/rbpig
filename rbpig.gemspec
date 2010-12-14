@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "rbpig"
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.date = "2010-12-14"
   
   s.homepage = %q{http://github.com/jae/rbpig}  
