@@ -34,23 +34,30 @@ module RBPig
       @oink_oink << oink
     end
     
-    def fetch(alias_to_fetch)
-      alias_dump = "/tmp/pigdump/#{Process.pid}_#{Time.now.to_i}"
-      
+    def fetch(*aliases)
+      alias_dump_dir = "/tmp/pigdump/#{Process.pid}_#{Time.now.to_i}"
       FileUtils.mkdir_p("/tmp/pigscript")
       script_file = "/tmp/pigscript/#{Process.pid}_#{Time.now.to_i}"
+      
       File.open(script_file, "w") do |file|
-        @oink_oink << "STORE #{alias_to_fetch} INTO '#{alias_dump}';"
+        aliases.each do |alias_to_fetch|
+          @oink_oink << "STORE #{alias_to_fetch} INTO '#{alias_dump_dir}/#{alias_to_fetch}';"
+        end
         file << @oink_oink.join("\n")
       end
       
+      alias_dumps = []
       pig_execution = "PIG_CLASSPATH='#{RBPig.classpath}' pig -f #{script_file}"
       if system(pig_execution)
-        local_alias_dump = alias_dump
-        File.delete(local_alias_dump) if File.exists?(local_alias_dump)
-        `mandy-get #{alias_dump} #{local_alias_dump}`
-        `mandy-rm #{alias_dump}`
-        File.open(local_alias_dump).readlines
+        local_alias_dump_dir = alias_dump_dir
+        FileUtils.rm_rf(local_alias_dump_dir) if File.exists?(local_alias_dump_dir)
+        
+        aliases.each do |alias_to_fetch|
+          `mandy-get #{alias_dump_dir}/#{alias_to_fetch} #{local_alias_dump_dir}/#{alias_to_fetch}`
+          alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines
+        end
+        `mandy-rm #{alias_dump_dir}`
+        alias_dumps
       else
         raise "Failed executing #{pig_execution}"
       end
