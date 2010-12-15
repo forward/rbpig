@@ -54,9 +54,9 @@ module RBPig
         
         aliases.each do |alias_to_fetch|
           `mandy-get #{alias_dump_dir}/#{alias_to_fetch} #{local_alias_dump_dir}/#{alias_to_fetch}`
-          alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines.map{|e| e.chomp("\n").split("\t")}
+          alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines.map{|e| e.chomp("\n").split("\t", -1)}
         end
-        `mandy-rm #{alias_dump_dir}`
+        # `mandy-rm #{alias_dump_dir}`
         return *alias_dumps
       else
         raise "Failed executing #{pig_execution}"
