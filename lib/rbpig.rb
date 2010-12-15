@@ -57,7 +57,7 @@ module RBPig
           alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines.map{|e| e.chomp("\n").split("\t")}
         end
         `mandy-rm #{alias_dump_dir}`
-        *alias_dumps
+        return *alias_dumps
       else
         raise "Failed executing #{pig_execution}"
       end
