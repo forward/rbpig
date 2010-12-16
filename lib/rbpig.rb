@@ -3,25 +3,28 @@ require File.join(File.dirname(__FILE__), "rbpig", "dataset")
 
 module RBPig
   class << self
-    CLASSPATH = [
-      "#{File.join(File.dirname(__FILE__), %w[..  java dist piggybank.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive hive-exec-0.5.0+32.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive hive-metastore-0.5.0+32.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive libfb303.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive jdo2-api-2.3-SNAPSHOT.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive datanucleus-core-1.1.2-patched.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive datanucleus-enhancer-1.1.2.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib hive datanucleus-rdbms-1.1.2.jar])}",
-      "#{File.join(File.dirname(__FILE__), %w[..  java lib pig jsp-2.1-6.1.14.jar])}",        
-      "#{File.join(File.dirname(__FILE__), %w[..  java conf])}"
-    ].join(":").freeze
-    
-    def classpath
-      CLASSPATH
+    def executable
+      "PIG_CLASSPATH='#{classpath}' PIG_OPTS='-Dudf.import.list=forward.pig.storage' pig"
     end
     
     def datasets(*datasets, &blk)
       yield Pig.new(datasets) unless blk.nil?
+    end
+    
+    private
+    def
+      @classpath ||= [
+        "#{File.join(File.dirname(__FILE__), %w[.. java dist piggybank.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-exec-0.5.0+32.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-metastore-0.5.0+32.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive libfb303.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive jdo2-api-2.3-SNAPSHOT.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-core-1.1.2-patched.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-enhancer-1.1.2.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-rdbms-1.1.2.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig jsp-2.1-6.1.14.jar])}",        
+        "#{File.join(File.dirname(__FILE__), %w[.. bin])}"
+      ].join(":").freeze
     end
   end
   
@@ -47,7 +50,7 @@ module RBPig
       end
       
       alias_dumps = []
-      pig_execution = "PIG_CLASSPATH='#{RBPig.classpath}' pig -f #{script_file}"
+      pig_execution = "#{RBPig.executable} -f #{script_file}"
       if system(pig_execution)
         local_alias_dump_dir = alias_dump_dir
         FileUtils.rm_rf(local_alias_dump_dir) if File.exists?(local_alias_dump_dir)

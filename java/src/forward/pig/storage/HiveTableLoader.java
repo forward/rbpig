@@ -1,4 +1,4 @@
-package org.apache.pig.piggybank.storage;
+package forward.pig.storage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

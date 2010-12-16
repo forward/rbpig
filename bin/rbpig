@@ -3,4 +3,4 @@
 require 'rubygems'
 require 'rbpig'
 
-exec("PIG_CLASSPATH='#{RBPig.classpath}' pig")
+exec(RBPig.executable)

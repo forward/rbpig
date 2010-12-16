@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = "rbpig"
-  s.version = "0.0.3"
-  s.date = "2010-12-14"
+  s.version = "0.0.4"
+  s.date = "2010-12-16"
   
   s.homepage = %q{http://github.com/jae/rbpig}  
   s.summary = "Pig queries execution ruby binding"
@@ -17,11 +17,11 @@ Gem::Specification.new do |s|
   s.executables = ["rbpig"]
   s.files = [
     "bin/rbpig",
+    "bin/hive-default.xml",
+    "bin/hive-site.xml",
     "lib/rbpig.rb",
     "lib/rbpig/dataset.rb",
     "java/dist/piggybank.jar",
-    "java/conf/hive-default.xml",
-    "java/conf/hive-site.xml",
     "java/lib/hive/hive-exec-0.5.0+32.jar",
     "java/lib/hive/hive-metastore-0.5.0+32.jar",
     "java/lib/hive/libfb303.jar",
