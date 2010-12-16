@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
     "bin/hive-site.xml",
     "lib/rbpig.rb",
     "lib/rbpig/dataset.rb",
-    "java/dist/piggybank.jar",
+    "java/dist/porkchop.jar",
     "java/lib/hive/hive-exec-0.5.0+32.jar",
     "java/lib/hive/hive-metastore-0.5.0+32.jar",
     "java/lib/hive/libfb303.jar",

@@ -12,9 +12,9 @@ module RBPig
     end
     
     private
-    def
+    def classpath
       @classpath ||= [
-        "#{File.join(File.dirname(__FILE__), %w[.. java dist piggybank.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java dist porkchop.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-exec-0.5.0+32.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-metastore-0.5.0+32.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive libfb303.jar])}",
