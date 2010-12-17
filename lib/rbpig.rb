@@ -3,12 +3,17 @@ require File.join(File.dirname(__FILE__), "rbpig", "dataset")
 
 module RBPig
   class << self
-    def executable
-      "PIG_CLASSPATH='#{classpath}' PIG_OPTS='-Dudf.import.list=forward.pig.storage' pig"
+    def executable(hadoop_config)
+      pig_options = []
+      pig_options << "PIG_CLASSPATH='#{classpath}'"
+      pig_options << "PIG_OPTS='-Dudf.import.list=forward.pig.storage'"
+      pig_options << "HADOOP_CONF_DIR='#{File.dirname(hadoop_config)}'" unless hadoop_config.nil?
+      pig_options << "pig"
+      pig_options.join(" ")
     end
     
-    def datasets(*datasets, &blk)
-      yield Pig.new(datasets) unless blk.nil?
+    def connect(hadoop_config=nil)
+      yield Pig.new(hadoop_config)
     end
     
     private
@@ -29,8 +34,13 @@ module RBPig
   end
   
   class Pig
-    def initialize(datasets)
-      @oink_oink = [*datasets.map{|e| e.to_s}]
+    def initialize(hadoop_config)
+      @hadoop_config = hadoop_config
+      @oink_oink = []
+    end
+    
+    def datasets(*datasets)
+       datasets.each {|e| @oink_oink << e.to_s}
     end
     
     def grunt(oink)
@@ -50,7 +60,7 @@ module RBPig
       end
       
       alias_dumps = []
-      pig_execution = "#{RBPig.executable} -f #{script_file}"
+      pig_execution = "#{RBPig.executable(@hadoop_config)} -f #{script_file}"
       if system(pig_execution)
         local_alias_dump_dir = alias_dump_dir
         FileUtils.rm_rf(local_alias_dump_dir) if File.exists?(local_alias_dump_dir)
