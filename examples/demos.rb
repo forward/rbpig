@@ -1,7 +1,7 @@
 require 'date'
 require 'rbpig'
 
-ppr_costs_stats, ppr_conversions_stats = RBPig.connect do |pig|
+ppr_costs_stats, ppr_conversions_stats = RBPig.connect(File.join(File.dirname(__FILE__), 'hadoop_cluster.xml')) do |pig|
   thirty_days_ago = (Date.today-30).strftime("%Y-%m-%d")
   
   pig.datasets(RBPig::Dataset.hive("ppr_keywords"), RBPig::Dataset.hive("ppr_conversions"))

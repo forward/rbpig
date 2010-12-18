@@ -1,19 +1,24 @@
 require 'fileutils'
+require 'rexml/document'
 require File.join(File.dirname(__FILE__), "rbpig", "dataset")
 
 module RBPig
   class << self
-    def executable(hadoop_config)
-      pig_options = []
-      pig_options << "PIG_CLASSPATH='#{classpath}'"
-      pig_options << "PIG_OPTS='-Dudf.import.list=forward.pig.storage'"
-      pig_options << "HADOOP_CONF_DIR='#{File.dirname(hadoop_config)}'" unless hadoop_config.nil?
-      pig_options << "pig"
-      pig_options.join(" ")
+    def executable(hadoop_config_file=nil)
+      pig_options = ["-Dudf.import.list=forward.pig.storage"]
+      unless hadoop_config_file.nil?
+        hadoop_config = {}
+        REXML::Document.new(File.new(hadoop_config_file)).elements.each('configuration/property') do |property|
+          hadoop_config[property.elements[1].text] = property.elements[2].text
+        end
+        pig_options << "-Dfs.default.name=#{hadoop_config["fs.default.name"]}" if hadoop_config.has_key?("fs.default.name")
+        pig_options << "-Dmapred.job.tracker=#{hadoop_config["mapred.job.tracker"]}" if hadoop_config.has_key?("mapred.job.tracker")
+      end
+      ["PIG_CLASSPATH='#{classpath}'", "PIG_OPTS='#{pig_options.join(" ")}'", "pig"].join(" ")
     end
     
-    def connect(hadoop_config=nil)
-      yield Pig.new(hadoop_config)
+    def connect(hadoop_config_file=nil)
+      yield Pig.new(hadoop_config_file)
     end
     
     private
@@ -34,8 +39,8 @@ module RBPig
   end
   
   class Pig
-    def initialize(hadoop_config)
-      @hadoop_config = hadoop_config
+    def initialize(hadoop_config_file)
+      @hadoop_config_file = hadoop_config_file
       @oink_oink = []
     end
     
@@ -60,16 +65,17 @@ module RBPig
       end
       
       alias_dumps = []
-      pig_execution = "#{RBPig.executable(@hadoop_config)} -f #{script_file}"
+      pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{script_file}"
       if system(pig_execution)
         local_alias_dump_dir = alias_dump_dir
         FileUtils.rm_rf(local_alias_dump_dir) if File.exists?(local_alias_dump_dir)
         
+        mandy_config = @hadoop_config_file.nil? && "" || "-c #{@hadoop_config_file}"
         aliases.each do |alias_to_fetch|
-          `mandy-get #{alias_dump_dir}/#{alias_to_fetch} #{local_alias_dump_dir}/#{alias_to_fetch}`
+          `mandy-get #{mandy_config} #{alias_dump_dir}/#{alias_to_fetch} #{local_alias_dump_dir}/#{alias_to_fetch}`
           alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines.map{|e| e.chomp("\n").split("\t", -1)}
         end
-        `mandy-rm #{alias_dump_dir}`
+        `mandy-rm #{mandy_config} #{alias_dump_dir}`
         return *alias_dumps
       else
         raise "Failed executing #{pig_execution}"

@@ -9,7 +9,7 @@ options = OpenStruct.new
 OptionParser.new do |opts|
   opts.banner = "USAGE: rbpig [options]"
 
-  opts.on("-c", "--conf HADOOP_CONF", "Use this hadoop config file.") do |config|
+  opts.on("-c", "--conf HADOOP_CONF", "Use this cluster xml config file.") do |config|
     options.hadoop_config = config
   end
   
