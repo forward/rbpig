@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property>
+    <name>fs.default.name</name>
+    <value>hdfs://master.hadoop.forward.co.uk:9000/</value>
+  </property>
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>master.hadoop.forward.co.uk:9001</value>
+  </property>
+  <property>
+    <name>hadoop.job.ugi</name>
+    <value>wallapps,supergroup</value>
+  </property>
+  <property>
+    <name>mapred.child.java.opts</name>
+    <value>-Xmx1024M</value>
+    <description>Larger heap-size for child jvms of maps and reduces.</description>
+  </property>
+</configuration>
