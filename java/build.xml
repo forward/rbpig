@@ -1,4 +1,4 @@
-<project basedir="." default="jar" name="piggybank">
+<project basedir="." default="jar" name="porkchop">
     <property name="src.dir" value="${basedir}/src"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="jar.file" value="${basedir}/dist/porkchop.jar"/>
