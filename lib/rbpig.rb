@@ -67,6 +67,7 @@ module RBPig
       
       pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{pig_script_path} 2>&1"
       pig_out = `#{pig_execution}`
+      puts pig_out
       if $?.success?
         return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}
       else
