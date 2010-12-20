@@ -66,12 +66,18 @@ module RBPig
       end
       
       pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{pig_script_path} 2>&1"
-      pig_out = `#{pig_execution}`
-      puts pig_out
+      pig_out = []
+      IO.popen(pig_execution) do |stdout|
+        until stdout.eof? do
+          pig_out << stdout.gets
+          puts pig_out.last
+        end
+      end
+      
       if $?.success?
-        return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}
+        return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}        
       else
-        raise "#{pig_out}\nFailed executing #{pig_execution}"
+        raise "#{pig_out.join("\n")}Failed executing #{pig_execution}"
       end
     end
     
