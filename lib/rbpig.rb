@@ -14,7 +14,7 @@ module RBPig
         pig_options << "-Dfs.default.name=#{hadoop_config["fs.default.name"]}" if hadoop_config.has_key?("fs.default.name")
         pig_options << "-Dmapred.job.tracker=#{hadoop_config["mapred.job.tracker"]}" if hadoop_config.has_key?("mapred.job.tracker")
       end
-      ["PIG_CLASSPATH='#{classpath}'", "PIG_OPTS='#{pig_options.join(" ")}'", "pig"].join(" ")
+      ["PIG_CLASSPATH='#{classpath}'", "PIG_OPTS='#{pig_options.join(" ")}'", "pig", "-l /tmp"].join(" ")
     end
     
     def connect(hadoop_config_file=nil)
@@ -65,8 +65,9 @@ module RBPig
         end
       end
       
-      pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{pig_script_path}"
-      if system(pig_execution)
+      pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{pig_script_path} 2>&1"
+      exec(pig_execution)
+      if $?.success?
         return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}
       else
         raise "Failed executing #{pig_execution}"
