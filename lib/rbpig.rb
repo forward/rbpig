@@ -54,31 +54,33 @@ module RBPig
     
     def fetch(*aliases)
       alias_dump_dir = "/tmp/pigdump/#{Process.pid}_#{Time.now.to_i}"
-      FileUtils.mkdir_p("/tmp/pigscript")
-      script_file = "/tmp/pigscript/#{Process.pid}_#{Time.now.to_i}"
+      aliases = aliases.map {|alias_to_fetch| "#{alias_dump_dir}/#{alias_to_fetch}"}
       
-      File.open(script_file, "w") do |file|
-        aliases.each do |alias_to_fetch|
-          @oink_oink << "STORE #{alias_to_fetch} INTO '#{alias_dump_dir}/#{alias_to_fetch}' USING PigStorage ('\\t');"
+      pig_script_path = "/tmp/pigscript/#{Process.pid}_#{Time.now.to_i}"
+      FileUtils.mkdir_p(File.dirname(pig_script_path))
+      File.open(pig_script_path, "w") do |file|
+        @oink_oink.each {|oink| file << "#{oink}\n"}
+        aliases.each do |dump_file_path|
+          file << "STORE #{File.basename(dump_file_path)} INTO '#{dump_file_path}' USING PigStorage ('\\t');\n"
         end
-        file << @oink_oink.join("\n")
       end
       
-      alias_dumps = []
-      pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{script_file}"
+      pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{pig_script_path}"
       if system(pig_execution)
-        local_alias_dump_dir = alias_dump_dir
-        FileUtils.rm_rf(local_alias_dump_dir) if File.exists?(local_alias_dump_dir)
-        
-        mandy_config = @hadoop_config_file.nil? && "" || "-c #{@hadoop_config_file}"
-        aliases.each do |alias_to_fetch|
-          `mandy-get #{mandy_config} #{alias_dump_dir}/#{alias_to_fetch} #{local_alias_dump_dir}/#{alias_to_fetch}`
-          alias_dumps << File.open("#{local_alias_dump_dir}/#{alias_to_fetch}").readlines.map{|e| e.chomp("\n").split("\t", -1)}
-        end
-        `mandy-rm #{mandy_config} #{alias_dump_dir}`
-        return *alias_dumps
+        return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}
       else
         raise "Failed executing #{pig_execution}"
+      end
+    end
+    
+    private
+    def fetch_files_in_hdfs(file_paths)
+      mandy_config = @hadoop_config_file.nil? && "" || "-c #{@hadoop_config_file}"
+      return file_paths.map do |file_path|
+        FileUtils.remove_file(file_path, true) if File.exists?(file_path)
+        `mandy-get #{mandy_config} #{file_path} #{file_path}`
+        `mandy-rm #{mandy_config} #{file_path}`
+        File.open(file_path) {|file| file.readlines}
       end
     end
   end

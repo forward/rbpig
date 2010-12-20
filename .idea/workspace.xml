@@ -58,7 +58,17 @@
     <favorites_list name="rbpig" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="HiveTableLoader.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/java/src/forward/pig/storage/HiveTableLoader.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="99" column="18" selection-start="4081" selection-end="4081" vertical-scroll-proportion="0.019480519">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -113,6 +123,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -134,7 +145,6 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
-      <pane id="Favorites" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -366,9 +376,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/java/src/forward/pig/storage/HiveTableLoader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="18" selection-start="4081" selection-end="4081" vertical-scroll-proportion="1.3246753">
-          <folding />
-        </state>
+        <state line="99" column="18" selection-start="4081" selection-end="4081" vertical-scroll-proportion="0.019480519" />
       </provider>
     </entry>
   </component>
