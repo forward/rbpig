@@ -4,26 +4,32 @@ require File.join(File.dirname(__FILE__), "rbpig", "dataset")
 
 module RBPig
   class << self
-    def executable(hadoop_config_file=nil)
+    def executable(configs)
+      configs = pig_configs(configs)
+      
       pig_options = ["-Dudf.import.list=forward.pig.storage"]
-      unless hadoop_config_file.nil?
+      unless configs[:hadoop_config].nil?
         hadoop_config = {}
-        REXML::Document.new(File.new(hadoop_config_file)).elements.each('configuration/property') do |property|
+        REXML::Document.new(File.new(configs[:hadoop_config])).elements.each('configuration/property') do |property|
           hadoop_config[property.elements[1].text] = property.elements[2].text
         end
         pig_options << "-Dfs.default.name=#{hadoop_config["fs.default.name"]}" if hadoop_config.has_key?("fs.default.name")
         pig_options << "-Dmapred.job.tracker=#{hadoop_config["mapred.job.tracker"]}" if hadoop_config.has_key?("mapred.job.tracker")
       end
-      ["PIG_CLASSPATH='#{classpath}'", "PIG_OPTS='#{pig_options.join(" ")}'", "pig", "-l /tmp"].join(" ")
+      ["PIG_CLASSPATH='#{pig_classpath(configs)}'", "PIG_OPTS='#{pig_options.join(" ")}'", "pig", "-l /tmp"].join(" ")
     end
     
-    def connect(hadoop_config_file=nil)
-      yield Pig.new(hadoop_config_file)
+    def connect(configs)
+      yield Pig.new(pig_configs(configs))
     end
     
     private
-    def classpath
-      @classpath ||= [
+    def pig_configs(configs)
+      {:hadoop_config => nil, :hive_config => nil}.merge(configs || {})
+    end
+    
+    def pig_classpath(configs)
+      classpath = [
         "#{File.join(File.dirname(__FILE__), %w[.. java dist porkchop.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-exec-0.5.0+32.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-metastore-0.5.0+32.jar])}",
@@ -32,15 +38,19 @@ module RBPig
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-core-1.1.2-patched.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-enhancer-1.1.2.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-rdbms-1.1.2.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig jsp-2.1-6.1.14.jar])}",        
-        "#{File.join(File.dirname(__FILE__), %w[.. bin])}"
-      ].join(":").freeze
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig jsp-2.1-6.1.14.jar])}"
+      ]
+      unless configs[:hive_config].nil?
+        raise "Rename '#{configs[:hive_config]}' to hive-site.xml for hive metastore configuration." unless File.basename(configs[:hive_config]) == "hive-site.xml"
+        classpath << File.dirname(configs[:hive_config])
+      end
+      classpath.join(":").freeze
     end
   end
   
   class Pig
-    def initialize(hadoop_config_file)
-      @hadoop_config_file = hadoop_config_file
+    def initialize(configs)
+      @configs = configs
       @oink_oink = []
     end
     
@@ -65,9 +75,10 @@ module RBPig
         end
       end
       
-      pig_execution = "#{RBPig.executable(@hadoop_config_file)} -f #{pig_script_path} 2>&1"
+      pig_execution = "#{RBPig.executable(@configs)} -f #{pig_script_path} 2>&1"
       pig_out = []
       IO.popen(pig_execution) do |stdout|
+        puts pig_execution
         until stdout.eof? do
           pig_out << stdout.gets
           puts pig_out.last
@@ -83,7 +94,7 @@ module RBPig
     
     private
     def fetch_files_in_hdfs(file_paths)
-      mandy_config = @hadoop_config_file.nil? && "" || "-c #{@hadoop_config_file}"
+      mandy_config = @configs[:hadoop_config].nil? && "" || "-c #{@configs[:hadoop_config]}"
       return file_paths.map do |file_path|
         FileUtils.remove_file(file_path, true) if File.exists?(file_path)
         `mandy-get #{mandy_config} #{file_path} #{file_path}`

@@ -9,8 +9,12 @@ options = OpenStruct.new
 OptionParser.new do |opts|
   opts.banner = "USAGE: rbpig [options]"
 
-  opts.on("-c", "--conf HADOOP_CONF", "Use this cluster xml config file.") do |config|
+  opts.on("-c", "--conf HADOOP_CONF", "Use this hadoop cluster xml config file.") do |config|
     options.hadoop_config = config
+  end
+
+  opts.on("-m", "--mata-conf HIVE_CONF", "Use this hive metastore xml config file.") do |config|
+    options.hive_config = config
   end
   
   opts.on_tail("-h", "--help", "Show this message") do
@@ -19,4 +23,4 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-exec(RBPig.executable(options.hadoop_config))
+exec(RBPig.executable(:hadoop_config => options.hadoop_config, :hive_config => options.hive_config))
