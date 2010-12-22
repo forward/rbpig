@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name = "rbpig"
-  s.version = "0.0.9"
-  s.date = "2010-12-21"
+  s.version = "0.1.0"
+  s.date = "2010-12-22"
   
-  s.homepage = %q{http://github.com/jae/rbpig}  
+  s.homepage = %q{https://github.com/forward/rbpig}
   s.summary = "Pig queries execution ruby binding"
   s.description = "Simple lib for executing Pig queries, supports textfile based hive table loader with automatic schema discovery"
     
