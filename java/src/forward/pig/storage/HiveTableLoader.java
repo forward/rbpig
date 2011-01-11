@@ -116,7 +116,7 @@ public class HiveTableLoader extends FileInputLoadFunc implements LoadMetadata {
     }
 
     private Object getField(Text text, int columnIndex) {
-        String field = text.toString().split(column_delimiter)[columnIndex];
+        String field = text.toString().split(column_delimiter, -1)[columnIndex];
         if (field.length() > 0) {
             DataByteArray value = new DataByteArray(field.getBytes());
             try {
