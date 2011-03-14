@@ -180,7 +180,7 @@ public class PathPartitionHelper {
 	ExpressionFactory expressionFactory = null;
 
 	if (partitionExpression != null) {
-	    expressionFactory = ExpressionFactory.newInstance();
+	    expressionFactory = new com.sun.el.ExpressionFactoryImpl();
 	}
 
 	String partitionColumnStr = properties

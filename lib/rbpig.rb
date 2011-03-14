@@ -31,14 +31,16 @@ module RBPig
     def pig_classpath(configs)
       classpath = [
         "#{File.join(File.dirname(__FILE__), %w[.. java dist porkchop.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-exec-0.5.0+32.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-metastore-0.5.0+32.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-exec-0.7.0-CDH3B4.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-metastore-0.7.0-CDH3B4.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive libfb303.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive jdo2-api-2.3-SNAPSHOT.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-core-1.1.2-patched.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-enhancer-1.1.2.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-rdbms-1.1.2.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig jsp-2.1-6.1.14.jar])}"
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive jdo2-api-2.3-ec.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-core-2.0.3.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-enhancer-2.0.3.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-rdbms-2.0.3.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive mysql-connector-java-5.1.15-bin.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig jsp-2.1.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig antlr-3.3-complete.jar])}"
       ]
       unless configs[:hive_config].nil?
         raise "Rename '#{configs[:hive_config]}' to hive-site.xml for hive metastore configuration." unless File.basename(configs[:hive_config]) == "hive-site.xml"
