@@ -2,12 +2,9 @@ package forward.pig.storage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.conf.HiveConf;
-import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
-import org.apache.hadoop.hive.ql.session.SessionState;
+import org.apache.hadoop.hive.metastore.api.ThriftHiveMetastore;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
@@ -28,6 +25,8 @@ import org.apache.pig.impl.logicalLayer.schema.Schema;
 import org.apache.pig.impl.util.ObjectSerializer;
 import org.apache.pig.impl.util.UDFContext;
 import org.apache.pig.piggybank.storage.partition.PathPartitionHelper;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.transport.TSocket;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,6 +35,8 @@ public class HiveTableLoader extends FileInputLoadFunc implements LoadMetadata {
     private static final String SCHEMA = "schema";
     private static final Log LOG = LogFactory.getLog(HiveTableLoader.class);
 
+    private final String hiveServer;
+    private final int hivePort;
     private final String column_delimiter;
     private final String databaseName;
     private final PathPartitionHelper partitionHelper;
@@ -44,15 +45,17 @@ public class HiveTableLoader extends FileInputLoadFunc implements LoadMetadata {
     private LineRecordReader reader;
     private PigSplit split;
 
-    public HiveTableLoader() {
-        this("\t", "default");
+    public HiveTableLoader(String hiveServer, String hivePort) {
+        this(hiveServer, hivePort, "\t", "default");
     }
 
-    public HiveTableLoader(String column_delimiter) {
-        this(column_delimiter, "default");
+    public HiveTableLoader(String hiveServer, String hivePort, String column_delimiter) {
+        this(hiveServer, hivePort, column_delimiter, "default");
     }
 
-    public HiveTableLoader(String column_delimiter, String databaseName) {
+    public HiveTableLoader(String hiveServer, String hivePort, String column_delimiter, String databaseName) {
+        this.hiveServer = hiveServer;
+        this.hivePort = Integer.parseInt(hivePort);
         this.column_delimiter = column_delimiter;
         this.databaseName = databaseName;
         this.partitionHelper = new PathPartitionHelper();
@@ -170,12 +173,17 @@ public class HiveTableLoader extends FileInputLoadFunc implements LoadMetadata {
         } else {
             String[] locations = location.split("/");
             String tableName = locations[locations.length - 1];
-
             List<org.apache.hadoop.hive.metastore.api.FieldSchema> hiveTable;
+
+            TSocket socket = new TSocket(hiveServer, hivePort);
             try {
-                hiveTable = new HiveMetaStoreClient(new HiveConf(new Configuration(), SessionState.class)).getSchema(databaseName, tableName);
+                ThriftHiveMetastore.Client client = new ThriftHiveMetastore.Client(new TBinaryProtocol(socket, true, false));
+                socket.open();
+                hiveTable = client.get_schema(databaseName, tableName);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to get schema for db: '" + databaseName + "' table: '" + tableName + "'", e);
+            }  finally {
+                socket.close();
             }
 
             Schema schema = new Schema();

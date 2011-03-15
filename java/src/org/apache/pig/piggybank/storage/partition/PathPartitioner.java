@@ -51,8 +51,6 @@ public class PathPartitioner {
      * @param location
      *            String root path in hdsf e.g. /user/hive/warehouse or
      *            /logs/repo
-     * @param conf
-     *            Configuration
      * @return Set of String. The order is maintained as per the directory tree.
      *         i.e. if /logs/repo/year=2010/month=2010 exists the first item in
      *         the set will be year and the second month.

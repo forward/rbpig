@@ -1,6 +1,5 @@
 require 'fileutils'
 require 'rexml/document'
-require File.join(File.dirname(__FILE__), "rbpig", "dataset")
 
 module RBPig
   class << self
@@ -25,27 +24,20 @@ module RBPig
     
     private
     def pig_configs(configs)
-      {:hadoop_config => nil, :hive_config => nil}.merge(configs || {})
+      {:hadoop_config => nil}.merge(configs || {})
     end
     
     def pig_classpath(configs)
       classpath = [
         "#{File.join(File.dirname(__FILE__), %w[.. java dist porkchop.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-exec-0.7.0-CDH3B4.jar])}",
         "#{File.join(File.dirname(__FILE__), %w[.. java lib hive hive-metastore-0.7.0-CDH3B4.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive libfb303.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive jdo2-api-2.3-ec.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-core-2.0.3.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-enhancer-2.0.3.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive datanucleus-rdbms-2.0.3.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive mysql-connector-java-5.1.15-bin.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig jsp-2.1.jar])}",
-        "#{File.join(File.dirname(__FILE__), %w[.. java lib pig antlr-3.3-complete.jar])}"
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive thrift-0.5.0.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib hive thrift-fb303-0.5.0.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib jsp-2.1.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib log4j-1.2.16.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib slf4j-api-1.6.1.jar])}",
+        "#{File.join(File.dirname(__FILE__), %w[.. java lib slf4j-log4j12-1.6.1.jar])}"
       ]
-      unless configs[:hive_config].nil?
-        raise "Rename '#{configs[:hive_config]}' to hive-site.xml for hive metastore configuration." unless File.basename(configs[:hive_config]) == "hive-site.xml"
-        classpath << File.dirname(configs[:hive_config])
-      end
       classpath.join(":").freeze
     end
   end

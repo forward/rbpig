@@ -18,17 +18,14 @@ Gem::Specification.new do |s|
   s.files = [
     "bin/rbpig",
     "lib/rbpig.rb",
-    "lib/rbpig/dataset.rb",
     "java/dist/porkchop.jar",
-    "java/lib/hive/hive-exec-0.7.0-CDH3B4.jar",
     "java/lib/hive/hive-metastore-0.7.0-CDH3B4.jar",
-    "java/lib/hive/libfb303.jar",
-    "java/lib/hive/jdo2-api-2.3-ec.jar",
-    "java/lib/hive/datanucleus-core-2.0.3.jar",
-    "java/lib/hive/datanucleus-enhancer-2.0.3.jar",
-    "java/lib/hive/datanucleus-rdbms-2.0.3.jar",
-    "java/lib/hive/mysql-connector-java-5.1.15-bin.jar",
-    "java/lib/pig/jsp-2.1.jar",
-    "java/lib/pig/antlr-3.3-complete.jar"
+    "java/lib/hive/thrift-0.5.0.jar",
+    "java/lib/hive/thrift-fb303-0.5.0.jar",
+    "java/lib/jsp-2.1.jar",
+    "java/lib/log4j-1.2.16.jar",
+    "java/lib/slf4j-api-1.6.1.jar",
+    "java/lib/slf4j-log4j12-1.6.1.jar"# ,
+    # "java/lib/pig/antlr-3.3-complete.jar"
   ]
 end
