@@ -69,30 +69,30 @@ module RBPig
         end
       end
       
-      pig_execution = "#{RBPig.executable(@configs)} -f #{pig_script_path} 2>&1"
-      pig_out = []
-      IO.popen(pig_execution) do |stdout|
-        puts pig_execution
-        until stdout.eof? do
-          pig_out << stdout.gets
-          puts pig_out.last
-        end
-      end
-      
-      if $?.success?
-        return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}        
-      else
-        raise "#{pig_out.join("\n")}Failed executing #{pig_execution}"
-      end
+      execute("#{RBPig.executable(@configs)} -f #{pig_script_path} 2>&1")
+      return *fetch_files_in_hdfs(aliases).map {|lines| lines.map{|e| e.chomp("\n").split("\t", -1)}}        
     end
     
     private
+    def execute(execution)
+      out = []
+      IO.popen(execution) do |stdout|
+        puts execution
+        until stdout.eof? do
+          out << stdout.gets
+          puts out.last
+        end
+      end
+
+      raise "#{out.join("\n")}Failed executing #{execution}" unless $?.success?
+    end
+    
     def fetch_files_in_hdfs(file_paths)
       mandy_config = @configs[:hadoop_config].nil? && "" || "-c #{@configs[:hadoop_config]}"
       return file_paths.map do |file_path|
         FileUtils.remove_file(file_path, true) if File.exists?(file_path)
-        `mandy-get #{mandy_config} #{file_path} #{file_path}`
-        `mandy-rm #{mandy_config} #{file_path}`
+        execute("mandy-get #{mandy_config} #{file_path} #{file_path} 2>&1")
+        execute("mandy-rm #{mandy_config} #{file_path} 2>&1")
         File.open(file_path) {|file| file.readlines}
       end
     end

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = "rbpig"
-  s.version = "0.1.2"
-  s.date = "2011-03-10"
+  s.version = "0.1.3"
+  s.date = "2011-05-25"
   
   s.homepage = %q{https://github.com/forward/rbpig}
   s.summary = "Pig queries execution ruby binding"
